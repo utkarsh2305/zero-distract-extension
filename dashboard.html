@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Report - Zero Distract</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-top">
+        <div class="header-left">
+          <div class="logo">
+            <svg width="40" height="40" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="14" cy="14" r="14" fill="#7C3AED"/>
+              <text x="14" y="16" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="central">Z</text>
+              <line x1="22" y1="4" x2="4" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="header-text">
+            <h1>Zero Distract</h1>
+            <p class="subtitle">Weekly Report</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="date-range" id="dateRange">Loading...</div>
+          <div class="score-badge" id="scoreBadge">--/100</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <h2>Daily Focus Score</h2>
+      <div class="bar-chart" id="barChart"></div>
+      <div class="chart-legend">
+        <span><span class="legend-dot" style="background: #6EE7B7;"></span> Excellent (70+)</span>
+        <span><span class="legend-dot" style="background: #FBBF24;"></span> Good (50-69)</span>
+        <span><span class="legend-dot" style="background: #F87171;"></span> Fair (&lt;50)</span>
+      </div>
+    </div>
+
+    <div class="daily-detail-section" id="dailyDetailSection" style="display: none;">
+      <h3 id="dailyDetailTitle">Monday, Feb 3</h3>
+      <div class="daily-detail-content" id="dailyDetailContent"></div>
+    </div>
+
+    <div class="insights-section">
+      <h2>Insights</h2>
+      <div class="insights-grid" id="insightsGrid"></div>
+    </div>
+
+    <div class="breakdown-section">
+      <h2>Site Breakdown</h2>
+      <div class="table-wrapper">
+        <table class="breakdown-table" id="breakdownTable">
+          <thead>
+            <tr>
+              <th>Site</th>
+              <th>Total Time</th>
+              <th>Daily Avg</th>
+              <th>Category</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

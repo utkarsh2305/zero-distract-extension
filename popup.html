@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero Distract</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="logo">
+          <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="14" cy="14" r="14" fill="#7C3AED"/>
+            <text x="14" y="16" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="central">Z</text>
+            <line x1="22" y1="4" x2="4" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="title">Zero Distract</span>
+      </div>
+      <div class="header-right">
+        <span class="date-label">Today</span>
+        <button class="settings-button" id="settingsButton" title="Settings">⚙</button>
+      </div>
+    </div>
+
+    <!-- Focus Mode Toggle -->
+    <button class="focus-toggle" id="focusToggle">
+      <div class="focus-toggle-content">
+        <span class="focus-icon" id="focusIcon">⏸</span>
+        <div class="focus-text">
+          <div class="focus-title" id="focusTitle">Focus Mode Off</div>
+          <div class="focus-subtitle" id="focusSubtitle">Tap to start focusing</div>
+        </div>
+      </div>
+      <div class="toggle-switch" id="toggleSwitch">
+        <div class="toggle-circle"></div>
+      </div>
+    </button>
+
+    <!-- Top Distractions -->
+    <div class="section">
+      <div class="section-label">Top distractions today</div>
+      <div class="distraction-list">
+        <div class="distraction-item">
+          <div class="distraction-header">
+            <span class="distraction-name">twitter.com</span>
+            <span class="distraction-time">47m</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill progress-danger" style="width: 62%"></div>
+          </div>
+        </div>
+        <div class="distraction-item">
+          <div class="distraction-header">
+            <span class="distraction-name">reddit.com</span>
+            <span class="distraction-time">31m</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill progress-warning" style="width: 41%"></div>
+          </div>
+        </div>
+        <div class="distraction-item">
+          <div class="distraction-header">
+            <span class="distraction-name">youtube.com</span>
+            <span class="distraction-time">18m</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill progress-accent" style="width: 24%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Focus Score -->
+    <div class="score-card">
+      <div class="score-left">
+        <div class="score-label">Focus score</div>
+        <div class="score-value">72<span class="score-total">/100</span></div>
+      </div>
+      <div class="score-right">
+        <div class="score-label">vs yesterday</div>
+        <div class="score-change">↑ 8%</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <button class="dashboard-button">Open Full Dashboard →</button>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

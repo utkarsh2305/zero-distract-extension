@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero Distract Settings</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="settings-container">
+    <!-- Header -->
+    <div class="settings-header">
+      <div class="header-left">
+        <div class="logo">
+          <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="14" cy="14" r="14" fill="#7C3AED"/>
+            <text x="14" y="16" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="central">Z</text>
+            <line x1="22" y1="4" x2="4" y2="22" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h1>Settings</h1>
+      </div>
+      <button class="close-btn" id="closeBtn">✕</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="settings-content">
+      
+      <!-- Distraction Sites Section -->
+      <div class="settings-section">
+        <h2>Distraction Sites</h2>
+        <p class="section-description">Manage which sites trigger nudges and feed replacement</p>
+        
+        <div class="sites-list" id="sitesList"></div>
+        
+        <div class="add-site-form">
+          <input type="text" id="siteInput" placeholder="e.g., example.com" class="site-input">
+          <button id="addSiteBtn" class="btn-primary">Add Site</button>
+        </div>
+      </div>
+
+      <!-- Work Hours Section -->
+      <div class="settings-section">
+        <h2>Work Hours</h2>
+        <p class="section-description">Nudges and feed replacement only activate during these hours</p>
+        
+        <div class="work-hours-form">
+          <div class="time-picker-group">
+            <label for="startTime">Start Time</label>
+            <input type="time" id="startTime" class="time-picker">
+          </div>
+          <div class="time-picker-group">
+            <label for="endTime">End Time</label>
+            <input type="time" id="endTime" class="time-picker">
+          </div>
+        </div>
+      </div>
+
+      <!-- Nudge Settings Section -->
+      <div class="settings-section">
+        <h2>Nudge Settings</h2>
+        
+        <div class="slider-group">
+          <label for="nudgeDelay">Nudge after <strong id="nudgeDelayValue">3</strong> minutes on a distracting site</label>
+          <input type="range" id="nudgeDelay" class="slider" min="1" max="10" value="3">
+          <div class="slider-labels">
+            <span>1 min</span>
+            <span>10 min</span>
+          </div>
+        </div>
+
+        <div class="slider-group">
+          <label for="nudgeCooldown">Don't nudge again for <strong id="nudgeCooldownValue">15</strong> minutes</label>
+          <input type="range" id="nudgeCooldown" class="slider" min="5" max="60" value="15">
+          <div class="slider-labels">
+            <span>5 min</span>
+            <span>60 min</span>
+          </div>
+        </div>
+
+        <div class="toggle-group">
+          <label for="smartTiming">Enable smart timing</label>
+          <p class="toggle-description">Nudge earlier during your peak distraction times</p>
+          <label class="toggle-switch">
+            <input type="checkbox" id="smartTiming">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Feed Replacement Section -->
+      <div class="settings-section">
+        <h2>Feed Replacement</h2>
+        <p class="section-description">Customize what appears when you visit distraction site homepages</p>
+        
+        <div class="feed-sites-group">
+          <div class="feed-toggle-item">
+            <label for="feedYoutube">YouTube</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="feedYoutube" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="feed-toggle-item">
+            <label for="feedReddit">Reddit</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="feedReddit" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="feed-toggle-item">
+            <label for="feedTwitter">Twitter/X</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="feedTwitter" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="feed-content-group">
+          <div class="feed-toggle-item">
+            <label for="showTodoList">Show to-do list</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="showTodoList" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="feed-toggle-item">
+            <label for="showQuote">Show inspirational quote</label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="showQuote" checked>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Section -->
+      <div class="settings-section">
+        <h2>Data & Reset</h2>
+        
+        <button id="exportBtn" class="btn-secondary">📥 Export my data</button>
+        <p class="button-description">Download all your tracked time data as a JSON file</p>
+        
+        <button id="clearBtn" class="btn-danger">🗑️ Clear all data</button>
+        <p class="button-description">Delete all tracked time data (cannot be undone)</p>
+        
+        <button id="resetBtn" class="btn-secondary">♻️ Reset to defaults</button>
+        <p class="button-description">Restore all settings to default values</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="settings-footer">
+        <p>Zero Distract v1.0</p>
+      </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal hidden">
+      <div class="modal-content">
+        <h3 id="confirmTitle">Confirm Action</h3>
+        <p id="confirmMessage">Are you sure?</p>
+        <div class="modal-buttons">
+          <button id="confirmCancel" class="btn-secondary">Cancel</button>
+          <button id="confirmConfirm" class="btn-danger">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="settings.js"></script>
+</body>
+</html>
