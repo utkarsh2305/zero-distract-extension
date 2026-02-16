@@ -413,7 +413,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     // First time installation - initialize default settings
     console.log('First time installation');
-    chrome.storage.local.set({ 
+    chrome.storage.local.set({
       focusMode: false,
       timeData: {},
       distractionSites: [
@@ -426,6 +426,8 @@ chrome.runtime.onInstalled.addListener((details) => {
         'tiktok.com'
       ]
     });
+    // Open onboarding page
+    chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
   } else if (details.reason === 'update') {
     // Extension updated
     console.log('Extension updated');

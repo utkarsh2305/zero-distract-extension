@@ -33,7 +33,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["dashboard.html", "settings.html"],
+      "resources": ["dashboard.html", "settings.html", "onboarding.html"],
       "matches": ["<all_urls>"]
     }
   ]

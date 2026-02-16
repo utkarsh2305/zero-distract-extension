@@ -34,6 +34,15 @@
 
   // ===== CONSTANTS =====
   const TIMER_TICK = 1000; // 1 second
+
+  // Check if extension context is still valid
+  function isContextValid() {
+    try {
+      return !!(chrome && chrome.runtime && chrome.runtime.id);
+    } catch (e) {
+      return false;
+    }
+  }
   
   const FOCUS_QUOTES = [
     "Your focus is your superpower.",
@@ -91,6 +100,7 @@
   }
 
   function loadSettings() {
+    if (!isContextValid()) return;
     chrome.storage.local.get(['focusMode', 'distractionSites', 'workHours', 'patterns', 'nudgeDelay', 'nudgeCooldown', 'feedReplacement', 'feedContent', 'smartTiming'], function(result) {
       focusModeActive = result.focusMode || false;
       distractionSites = result.distractionSites || [];
@@ -112,8 +122,18 @@
       return;
     }
     timerInterval = setInterval(() => {
-      timeOnSite++;
-      checkAndShowNudge();
+      try {
+        if (!isContextValid()) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          return;
+        }
+        timeOnSite++;
+        checkAndShowNudge();
+      } catch (e) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
     }, TIMER_TICK);
   }
 
@@ -127,10 +147,9 @@
   }
 
   function checkAndShowNudge() {
-    if (nudgeShown) {
+    if (nudgeShown) return;
+    if (!isContextValid()) return;
 
-    }
-    
     chrome.storage.local.get(['focusMode', 'distractionSites', 'lastNudgeTime', 'patterns', 'nudgeDelay', 'nudgeCooldown', 'smartTiming'], function(result) {
       const focusMode = result.focusMode || false;
       const distractionSites = result.distractionSites || [];
@@ -231,7 +250,7 @@
   function createNudgeUI(timeSpent) {
     nudgeContainer = document.createElement('div');
     nudgeContainer.id = 'zero-distract-nudge-container';
-    nudgeContainer.style.cssText = 'all: initial; position: fixed; top: 20px; right: 20px; z-index: 2147483646;';
+    nudgeContainer.style.cssText = 'all: initial; position: fixed; bottom: 20px; right: 20px; z-index: 2147483646;';
 
     shadowRoot = nudgeContainer.attachShadow({ mode: 'closed' });
 
@@ -243,128 +262,125 @@
         box-sizing: border-box;
       }
 
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
       .nudge-card {
         background: #16161A;
         border: 1px solid #2A2A32;
         border-radius: 12px;
-        padding: 20px;
-        width: 320px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        padding: 14px 16px;
+        width: 280px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         color: #E4E4E7;
+        animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
-      .nudge-header {
+      .nudge-content {
         display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
+        gap: 10px;
+        align-items: flex-start;
       }
 
       .nudge-icon {
-        width: 32px;
-        height: 32px;
-        background: linear-gradient(135deg, #6EE7B7, #34D399);
+        width: 30px;
+        height: 30px;
         border-radius: 8px;
+        background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(251, 191, 36, 0.05));
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 800;
-        color: #0D0D0F;
-        font-size: 16px;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+
+      .nudge-text {
+        flex: 1;
       }
 
       .nudge-title {
-        font-size: 18px;
+        color: #E4E4E7;
+        font-size: 12px;
         font-weight: 600;
+        margin-bottom: 2px;
       }
 
       .nudge-subtitle {
-        font-size: 13px;
-        color: #A1A1A9;
-        margin-bottom: 16px;
-      }
-
-      .time-info {
-        background: #1E1E24;
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 16px;
-        font-size: 14px;
-      }
-
-      .time-label {
         color: #71717A;
-        font-size: 12px;
+        font-size: 11px;
+        line-height: 1.5;
       }
 
-      .time-value {
-        color: #F87171;
-        font-weight: 600;
-        font-size: 16px;
+      .nudge-dismiss {
+        background: none;
+        border: none;
+        color: #52525B;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 0;
+        margin-left: auto;
+        flex-shrink: 0;
       }
 
-      .quote {
-        font-size: 13px;
-        font-style: italic;
-        color: #A1A1A9;
-        margin-bottom: 16px;
-        padding: 12px;
-        border-left: 3px solid #6EE7B7;
+      .nudge-dismiss:hover {
+        color: #E4E4E7;
       }
 
       .nudge-buttons {
         display: flex;
-        gap: 10px;
+        gap: 6px;
+        margin-top: 12px;
       }
 
       .btn {
-        flex: 1;
-        padding: 10px;
+        padding: 7px 10px;
         border: none;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 600;
+        border-radius: 7px;
+        font-size: 11px;
+        font-weight: 700;
         cursor: pointer;
         transition: all 0.2s;
       }
 
       .btn-primary {
-        background: #6EE7B7;
+        flex: 1;
+        background: linear-gradient(135deg, #6EE7B7, #34D399);
         color: #0D0D0F;
       }
 
       .btn-primary:hover {
-        background: #34D399;
+        opacity: 0.9;
       }
 
       .btn-secondary {
-        background: #2A2A32;
-        color: #E4E4E7;
-        border: 1px solid #3A3A42;
+        padding: 7px 12px;
+        background: #1E1E24;
+        color: #71717A;
+        border: 1px solid #2A2A32;
       }
 
       .btn-secondary:hover {
-        background: #3A3A42;
+        background: #2A2A32;
       }
     `;
 
     const html = document.createElement('template');
     html.innerHTML = `
       <div class="nudge-card">
-        <div class="nudge-header">
-          <div class="nudge-icon">Z</div>
-          <div class="nudge-title">Focus Check-in</div>
+        <div class="nudge-content">
+          <div class="nudge-icon">\u26A1</div>
+          <div class="nudge-text">
+            <div class="nudge-title">You usually drift here around now</div>
+            <div class="nudge-subtitle">${formatTime(timeSpent)} on ${currentDomain} today. Back on track?</div>
+          </div>
+          <button class="nudge-dismiss" id="dismissBtn">\u2715</button>
         </div>
-        <div class="nudge-subtitle">You've been here for a while</div>
-        <div class="time-info">
-          <div class="time-label">Time spent on ${currentDomain}</div>
-          <div class="time-value">${formatTime(timeSpent)}</div>
-        </div>
-        <div class="quote">"${FOCUS_QUOTES[Math.floor(Math.random() * FOCUS_QUOTES.length)]}"</div>
         <div class="nudge-buttons">
-          <button class="btn btn-secondary" id="continueBtn">Continue</button>
-          <button class="btn btn-primary" id="closeTabBtn">Back to Work</button>
+          <button class="btn btn-primary" id="closeTabBtn">Back to work</button>
+          <button class="btn btn-secondary" id="continueBtn">5 more min</button>
         </div>
       </div>
     `;
@@ -374,9 +390,11 @@
 
     const continueBtn = shadowRoot.getElementById('continueBtn');
     const closeTabBtn = shadowRoot.getElementById('closeTabBtn');
+    const dismissBtn = shadowRoot.getElementById('dismissBtn');
 
     continueBtn.addEventListener('click', dismissNudge);
     closeTabBtn.addEventListener('click', closeTab);
+    dismissBtn.addEventListener('click', dismissNudge);
 
     document.body.appendChild(nudgeContainer);
   }
@@ -440,18 +458,12 @@
 
     feedReplacementShadowRoot = feedReplacementOverlay.attachShadow({ mode: 'closed' });
 
-    const randomQuote = FOCUS_QUOTES[Math.floor(Math.random() * FOCUS_QUOTES.length)];
-
     const style = document.createElement('style');
     style.textContent = `
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-      }
-
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       }
 
       .feed-replacement {
@@ -462,25 +474,28 @@
         height: 100%;
         background: #0D0D0F;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         overflow-y: auto;
-        padding: 40px 20px;
+        padding: 50px 20px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #E4E4E7;
       }
 
       .feed-replacement-content {
-        max-width: 480px;
+        max-width: 360px;
         width: 100%;
+        text-align: center;
       }
 
       .logo-section {
-        text-align: center;
-        margin-bottom: 32px;
+        margin-bottom: 16px;
       }
 
       .logo {
-        width: 40px;
-        height: 40px;
+        width: 28px;
+        height: 28px;
         background: linear-gradient(135deg, #6EE7B7, #34D399);
         border-radius: 8px;
         display: flex;
@@ -488,57 +503,39 @@
         justify-content: center;
         font-weight: 800;
         color: #0D0D0F;
-        font-size: 20px;
+        font-size: 14px;
         margin: 0 auto;
       }
 
-      .title {
-        color: #E4E4E7;
-        font-size: 32px;
-        font-weight: 700;
-        margin-bottom: 12px;
+      .time-display {
+        font-size: 42px;
+        font-weight: 200;
+        color: #E8EAED;
+        letter-spacing: -0.04em;
+        margin-bottom: 6px;
       }
 
-      .subtitle {
-        color: #A1A1A9;
-        font-size: 16px;
+      .message {
+        color: #9AA0A6;
+        font-size: 13px;
+        margin-bottom: 28px;
+      }
+
+      .priorities-card {
+        background: #16161A;
+        border-radius: 14px;
+        border: 1px solid #2A2A32;
+        padding: 18px 22px;
+        text-align: left;
         margin-bottom: 16px;
       }
 
-      .focus-time {
-        background: linear-gradient(135deg, rgba(110, 231, 183, 0.1), rgba(52, 211, 153, 0.05));
-        border: 1px solid rgba(110, 231, 183, 0.3);
-        padding: 20px;
-        border-radius: 12px;
-        text-align: center;
-        margin-bottom: 24px;
-      }
-
-      .time-display {
-        font-size: 48px;
-        font-weight: 800;
-        color: #6EE7B7;
-        font-family: 'Monaco', monospace;
-      }
-
-      .time-label {
+      .priorities-header {
         color: #71717A;
-        font-size: 12px;
-        margin-top: 8px;
-      }
-
-      .todo-list {
-        background: #16161A;
-        border: 1px solid #2A2A32;
-        border-radius: 10px;
-        padding: 16px;
-        margin-bottom: 24px;
-      }
-
-      .todo-header {
-        color: #6EE7B7;
-        font-size: 13px;
+        font-size: 10px;
         font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
         margin-bottom: 12px;
       }
 
@@ -546,25 +543,32 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid #2A2A32;
       }
 
       .todo-item:last-child {
-        margin-bottom: 0;
+        border-bottom: none;
       }
 
       .checkbox {
-        width: 20px;
-        height: 20px;
+        width: 16px;
+        height: 16px;
         border: 2px solid #2A2A32;
-        border-radius: 4px;
+        border-radius: 5px;
         cursor: pointer;
         transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+        color: #6EE7B7;
+        flex-shrink: 0;
       }
 
       .checkbox.checked {
-        background: #6EE7B7;
         border-color: #6EE7B7;
+        background: rgba(110, 231, 183, 0.12);
       }
 
       .todo-input {
@@ -577,53 +581,25 @@
       }
 
       .todo-input.completed {
-        color: #71717A;
+        color: #52525B;
         text-decoration: line-through;
       }
 
-      .quote {
-        color: #A1A1A9;
-        font-style: italic;
-        font-size: 14px;
-        margin-bottom: 24px;
-        padding: 16px;
-        border-left: 3px solid #6EE7B7;
-      }
-
-      .button-group {
-        display: flex;
-        gap: 12px;
-      }
-
-      .btn {
-        flex: 1;
-        padding: 12px 20px;
-        border: none;
+      .continue-btn {
+        margin-top: 16px;
+        padding: 8px 16px;
+        background: transparent;
+        border: 1px solid #2A2A32;
         border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
         cursor: pointer;
+        color: #71717A;
+        font-size: 11px;
         transition: all 0.2s;
       }
 
-      .btn-primary {
-        background: #6EE7B7;
-        color: #0D0D0F;
-      }
-
-      .btn-primary:hover {
-        background: #34D399;
-        transform: translateY(-1px);
-      }
-
-      .btn-secondary {
-        background: #2A2A32;
+      .continue-btn:hover {
+        background: #1E1E24;
         color: #E4E4E7;
-        border: 1px solid #3A3A42;
-      }
-
-      .btn-secondary:hover {
-        background: #3A3A42;
       }
     `;
 
@@ -633,28 +609,20 @@
         <div class="feed-replacement-content">
           <div class="logo-section">
             <div class="logo">Z</div>
-            <div class="title">Zero Distract</div>
-            <div class="subtitle">Focus on what matters</div>
           </div>
 
-          <div class="focus-time">
-            <div class="time-display" id="focusTime">00:00</div>
-            <div class="time-label">Time focused today</div>
-          </div>
+          <div class="time-display" id="focusTime">--:--</div>
+
+          <div class="message">You opened ${currentDomain}. Here's what matters instead.</div>
 
           ${feedContent.showTodos ? `
-          <div class="todo-list">
-            <div class="todo-header">Priority Tasks</div>
+          <div class="priorities-card">
+            <div class="priorities-header">Your priorities</div>
             <div id="todoList"></div>
           </div>
           ` : ''}
 
-          ${feedContent.showQuotes ? `<div class="quote">"${randomQuote}"</div>` : ''}
-
-          <div class="button-group">
-            <button class="btn btn-secondary" id="bypassBtn">Take a break (30m)</button>
-            <button class="btn btn-primary" id="focusStartBtn">Start Focusing</button>
-          </div>
+          <button class="continue-btn" id="bypassBtn">Continue to ${currentDomain} anyway \u2192</button>
         </div>
       </div>
     `;
@@ -667,10 +635,7 @@
     }
     updateFeedReplacementTime(feedReplacementShadowRoot);
 
-    const focusStartBtn = feedReplacementShadowRoot.getElementById('focusStartBtn');
     const bypassBtn = feedReplacementShadowRoot.getElementById('bypassBtn');
-
-    focusStartBtn.addEventListener('click', dismissFeedReplacement);
     bypassBtn.addEventListener('click', bypassFeedReplacement);
 
     document.body.appendChild(feedReplacementOverlay);
@@ -695,8 +660,9 @@
         const input = item.querySelector('.todo-input');
 
         checkbox.addEventListener('click', () => {
-          checkbox.classList.toggle('checked');
+          const isChecked = checkbox.classList.toggle('checked');
           input.classList.toggle('completed');
+          checkbox.textContent = isChecked ? '\u2713' : '';
         });
 
         input.addEventListener('input', () => {
@@ -720,10 +686,12 @@
 
     feedReplacementTimeInterval = setInterval(() => {
       const now = new Date();
-      const hours = String(now.getHours()).padStart(2, '0');
+      const h = now.getHours();
       const mins = String(now.getMinutes()).padStart(2, '0');
-      timeEl.textContent = `${hours}:${mins}`;
-    });
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const displayHour = h % 12 || 12;
+      timeEl.textContent = `${displayHour}:${mins} ${ampm}`;
+    }, 1000);
   }
 
   function dismissFeedReplacement() {
@@ -750,24 +718,32 @@
 
   // ===== EVENT LISTENERS =====
 
-  chrome.storage.onChanged.addListener((changes, namespace) => {
-    if (namespace === 'local') {
-      if (changes.focusMode) {
-        focusModeActive = changes.focusMode.newValue;
-        
-        if (!focusModeActive) {
-          dismissNudge();
-          dismissFeedReplacement();
-        } else if (!bypassCooldownActive && isHomepage()) {
-          initFeedReplacement();
+  try {
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+      try {
+        if (namespace === 'local') {
+          if (changes.focusMode) {
+            focusModeActive = changes.focusMode.newValue;
+
+            if (!focusModeActive) {
+              dismissNudge();
+              dismissFeedReplacement();
+            } else if (!bypassCooldownActive && isHomepage()) {
+              initFeedReplacement();
+            }
+          }
+          // Reload all settings if any change
+          if (changes.nudgeDelay || changes.nudgeCooldown || changes.feedReplacement || changes.feedContent || changes.smartTiming || changes.workHours) {
+            loadSettings();
+          }
         }
+      } catch (e) {
+        // Extension context invalidated - silently ignore
       }
-      // Reload all settings if any change
-      if (changes.nudgeDelay || changes.nudgeCooldown || changes.feedReplacement || changes.feedContent || changes.smartTiming || changes.workHours) {
-        loadSettings();
-      }
-    }
-  });
+    });
+  } catch (e) {
+    // Extension context invalidated during listener registration
+  }
 
   window.addEventListener('beforeunload', () => {
     if (timerInterval) {

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Zero Distract</title>
+  <link rel="stylesheet" href="onboarding.css">
+</head>
+<body>
+  <div class="onboarding-container">
+    <!-- Header -->
+    <div class="onboarding-header">
+      <h1 class="onboarding-title">Zero Distract — How It Lives in Your Browser</h1>
+      <p class="onboarding-subtitle">Click through the scenarios below to see each interaction</p>
+    </div>
+
+    <!-- Scenario Buttons -->
+    <div class="scenario-buttons">
+      <button class="scenario-btn active" data-step="0">Normal browsing</button>
+      <button class="scenario-btn" data-step="1">Click the icon</button>
+      <button class="scenario-btn" data-step="2">Smart nudge appears</button>
+      <button class="scenario-btn" data-step="3">Feed replaced</button>
+    </div>
+
+    <!-- Browser Mockup -->
+    <div class="browser-window">
+      <!-- Tab Bar -->
+      <div class="browser-tab-bar">
+        <div class="window-controls">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+        </div>
+        <div class="tab active-tab">
+          <span class="tab-icon">𝕏</span>
+          <span class="tab-title">Home / X</span>
+          <span class="tab-close">✕</span>
+        </div>
+        <div class="tab inactive-tab">
+          <span class="tab-title">Google Docs</span>
+        </div>
+        <div class="tab-add">+</div>
+      </div>
+
+      <!-- URL Bar -->
+      <div class="browser-toolbar">
+        <div class="nav-buttons">
+          <span>←</span>
+          <span>→</span>
+          <span>↻</span>
+        </div>
+        <div class="url-bar">
+          <span class="lock-icon">🔒</span>
+          <span class="url-text">x.com</span>
+        </div>
+        <div class="extension-area">
+          <div class="ext-icon-placeholder"></div>
+          <div class="ext-icon-placeholder"></div>
+          <div class="extension-icon-wrapper">
+            <button class="extension-icon" id="extensionIcon">Z</button>
+            <!-- Callout for step 0 -->
+            <div class="callout" id="callout">
+              ← Extension icon lives here
+              <div class="callout-arrow"></div>
+            </div>
+          </div>
+          <div class="ext-icon-placeholder"></div>
+        </div>
+      </div>
+
+      <!-- Page Content Area -->
+      <div class="browser-content" id="browserContent">
+        <!-- Fake Twitter Page -->
+        <div class="fake-page" id="fakePage">
+          <div class="twitter-layout">
+            <div class="twitter-sidebar">
+              <div class="twitter-logo">𝕏</div>
+              <div class="sidebar-icon">🏠</div>
+              <div class="sidebar-icon">🔍</div>
+              <div class="sidebar-icon">🔔</div>
+              <div class="sidebar-icon">✉</div>
+              <div class="sidebar-icon">👤</div>
+            </div>
+            <div class="twitter-feed">
+              <div class="feed-title">Home</div>
+              <div class="tweet">
+                <div class="tweet-avatar"></div>
+                <div class="tweet-body">
+                  <div class="tweet-header">
+                    <span class="tweet-name">User 1</span>
+                    <span class="tweet-handle">@handle1 · 2h</span>
+                  </div>
+                  <div class="tweet-text">Just shipped a new feature that I've been working on for weeks. Thread 🧵</div>
+                </div>
+              </div>
+              <div class="tweet">
+                <div class="tweet-avatar"></div>
+                <div class="tweet-body">
+                  <div class="tweet-header">
+                    <span class="tweet-name">User 2</span>
+                    <span class="tweet-handle">@handle2 · 2h</span>
+                  </div>
+                  <div class="tweet-text">Hot take: the best productivity hack is just closing Twitter</div>
+                </div>
+              </div>
+              <div class="tweet">
+                <div class="tweet-avatar"></div>
+                <div class="tweet-body">
+                  <div class="tweet-header">
+                    <span class="tweet-name">User 3</span>
+                    <span class="tweet-handle">@handle3 · 2h</span>
+                  </div>
+                  <div class="tweet-text">Anyone else feel like time moves differently on Tuesdays?</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feed Replacement Overlay (step 3) -->
+        <div class="feed-replaced-overlay hidden" id="feedReplacedOverlay">
+          <div class="feed-replaced-logo">Z</div>
+          <div class="feed-replaced-time" id="feedReplacedTime">2:47 PM</div>
+          <div class="feed-replaced-message">You opened Twitter. Here's what matters instead.</div>
+          <div class="feed-replaced-card">
+            <div class="feed-replaced-card-header">Your priorities</div>
+            <div class="priority-item">
+              <div class="priority-checkbox" data-index="0"></div>
+              <span class="priority-text">Review Q1 product brief</span>
+            </div>
+            <div class="priority-item checked">
+              <div class="priority-checkbox checked" data-index="1">✓</div>
+              <span class="priority-text completed">Reply to design feedback</span>
+            </div>
+            <div class="priority-item">
+              <div class="priority-checkbox" data-index="2"></div>
+              <span class="priority-text">Prep for 3pm standup</span>
+            </div>
+          </div>
+          <button class="feed-replaced-continue">Continue to Twitter anyway →</button>
+        </div>
+
+        <!-- Nudge Toast (step 2) -->
+        <div class="nudge-toast hidden" id="nudgeToast">
+          <div class="nudge-toast-content">
+            <div class="nudge-toast-icon">⚡</div>
+            <div class="nudge-toast-text">
+              <div class="nudge-toast-title">You usually drift here around now</div>
+              <div class="nudge-toast-subtitle">23 min on Twitter today. Back on track?</div>
+            </div>
+            <button class="nudge-toast-dismiss" id="nudgeDismiss">✕</button>
+          </div>
+          <div class="nudge-toast-buttons">
+            <button class="nudge-btn-primary" id="nudgeBackToWork">Back to work</button>
+            <button class="nudge-btn-secondary" id="nudge5Min">5 more min</button>
+          </div>
+        </div>
+
+        <!-- Popup Dropdown (step 1) -->
+        <div class="popup-overlay hidden" id="popupOverlay"></div>
+        <div class="popup-dropdown hidden" id="popupDropdown">
+          <div class="popup-header">
+            <div class="popup-header-left">
+              <div class="popup-logo">Z</div>
+              <span class="popup-name">Zero Distract</span>
+            </div>
+            <span class="popup-date">Today</span>
+          </div>
+
+          <button class="popup-focus-toggle" id="popupFocusToggle">
+            <div class="popup-toggle-left">
+              <span class="popup-toggle-emoji" id="popupToggleEmoji">⏸</span>
+              <div class="popup-toggle-text">
+                <div class="popup-toggle-title" id="popupToggleTitle">Focus Mode Off</div>
+                <div class="popup-toggle-subtitle" id="popupToggleSubtitle">Tap to start focusing</div>
+              </div>
+            </div>
+            <div class="popup-switch" id="popupSwitch">
+              <div class="popup-switch-circle"></div>
+            </div>
+          </button>
+
+          <div class="popup-section-label">Top distractions</div>
+          <div class="popup-distraction">
+            <div class="popup-distraction-row">
+              <span class="popup-site-name">twitter.com</span>
+              <span class="popup-site-time">47m</span>
+            </div>
+            <div class="popup-bar"><div class="popup-bar-fill danger" style="width: 62%"></div></div>
+          </div>
+          <div class="popup-distraction">
+            <div class="popup-distraction-row">
+              <span class="popup-site-name">reddit.com</span>
+              <span class="popup-site-time">31m</span>
+            </div>
+            <div class="popup-bar"><div class="popup-bar-fill warning" style="width: 41%"></div></div>
+          </div>
+          <div class="popup-distraction">
+            <div class="popup-distraction-row">
+              <span class="popup-site-name">youtube.com</span>
+              <span class="popup-site-time">18m</span>
+            </div>
+            <div class="popup-bar"><div class="popup-bar-fill accent" style="width: 24%"></div></div>
+          </div>
+
+          <div class="popup-score-card">
+            <div class="popup-score-left">
+              <div class="popup-score-label">Focus score</div>
+              <div class="popup-score-value">72<span class="popup-score-total">/100</span></div>
+            </div>
+            <div class="popup-score-right">
+              <div class="popup-score-label">vs yesterday</div>
+              <div class="popup-score-change">↑ 8%</div>
+            </div>
+          </div>
+
+          <button class="popup-dashboard-btn">Open Full Dashboard →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Explanation Panel -->
+    <div class="explanation-panel">
+      <div class="explanation-icon">?</div>
+      <div class="explanation-text">
+        <div class="explanation-title" id="explanationTitle">Normal browsing</div>
+        <div class="explanation-desc" id="explanationDesc">Extension icon sits quietly in toolbar. Green = Focus on. Gray = off. Click to open popup.</div>
+      </div>
+    </div>
+
+    <!-- User Control Summary -->
+    <div class="control-summary">
+      <div class="control-card">
+        <div class="control-card-header accent-header">Where you click</div>
+        <div class="control-item"><span class="control-label">Extension icon</span> — opens the popup panel</div>
+        <div class="control-item"><span class="control-label">Focus toggle</span> — turns focus mode on/off</div>
+        <div class="control-item"><span class="control-label">Dashboard link</span> — opens full-page report</div>
+        <div class="control-item"><span class="control-label">Nudge buttons</span> — "Back to work" or "5 min"</div>
+      </div>
+      <div class="control-card">
+        <div class="control-card-header warning-header">Can you hide it?</div>
+        <div class="control-item"><span class="control-label">Icon</span> — pin/unpin from Chrome toolbar</div>
+        <div class="control-item"><span class="control-label">Nudges</span> — dismiss with ✕ or snooze 5 min</div>
+        <div class="control-item"><span class="control-label">Feed blocker</span> — "Continue anyway" bypass</div>
+        <div class="control-item"><span class="control-label">Whole extension</span> — pause or disable anytime</div>
+      </div>
+    </div>
+
+    <!-- Get Started -->
+    <div class="get-started-section">
+      <button class="get-started-btn" id="getStartedBtn">Get Started →</button>
+    </div>
+  </div>
+
+  <script src="onboarding.js"></script>
+</body>
+</html>

@@ -40,9 +40,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Load time tracking data
     loadTimeData();
     
-    // Show welcome message on first run
+    // Redirect to onboarding on first run
     if (isFirstRun) {
-      showWelcomeMessage();
+      chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
+      window.close();
+      return;
     }
     // Add event listener for toggle
     if (focusToggle) {
@@ -108,61 +110,6 @@ async function checkFirstRun() {
       console.error('[Zero Distract] Error checking first run:', error);
       resolve(false);
     }
-  });
-}
-
-// Show welcome message overlay
-function showWelcomeMessage() {
-  const overlay = document.createElement('div');
-  overlay.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(13, 13, 15, 0.95);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    animation: fadeInOverlay 0.3s ease-in-out;
-  `;
-  
-  overlay.innerHTML = `
-    <div style="
-      text-align: center;
-      max-width: 300px;
-      animation: slideUpMessage 0.5s ease-out;
-    ">
-      <div style="font-size: 40px; margin-bottom: 16px;">👋</div>
-      <h2 style="color: #F5F5F5; margin: 0 0 12px 0; font-size: 20px; font-weight: 600;">Welcome to Zero Distract!</h2>
-      <p style="color: #71717A; margin: 0 0 24px 0; font-size: 13px; line-height: 1.6;">
-        I'll track your browsing patterns and nudge you when you spend too much time on distracting sites.
-      </p>
-      <p style="color: #6EE7B7; margin: 0 0 24px 0; font-size: 12px; font-weight: 600;">Check back in a day for insights!</p>
-      <button style="
-        background: linear-gradient(135deg, #6EE7B7, #34D399);
-        color: #0D0D0F;
-        border: none;
-        padding: 10px 24px;
-        border-radius: 6px;
-        font-weight: 600;
-        cursor: pointer;
-        font-size: 12px;
-        transition: transform 0.2s;
-      " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Got it!</button>
-    </div>
-    <style>
-      @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
-      @keyframes slideUpMessage { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
-  `;
-  
-  document.body.appendChild(overlay);
-  overlay.querySelector('button').addEventListener('click', () => {
-    overlay.style.opacity = '0';
-    overlay.style.transition = 'opacity 0.3s';
-    setTimeout(() => overlay.remove(), 300);
   });
 }
 

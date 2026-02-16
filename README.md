@@ -1,235 +1,224 @@
-# Zero Distract - Chrome Extension
+# Zero Distract
 
-**Reclaim your focus with intelligent nudges.** Zero Distract is a Manifest V3 Chrome extension that goes beyond simple site blocking to understand your distraction patterns and nudge you at the right moments.
+**Reclaim your focus with intelligent nudges.** Zero Distract is a Manifest V3 Chrome extension that goes beyond simple site blocking — it tracks your distraction patterns, delivers smart contextual nudges, and replaces social media feeds with your priorities.
 
-Unlike basic site blockers (Cold Turkey, StayFocusd), Zero Distract tracks your actual time spent on distracting sites and analyzes patterns to deliver smart, contextual reminders when you need them most.
+![Chrome Web Store](https://img.shields.io/badge/platform-Chrome-blue) ![Manifest V3](https://img.shields.io/badge/manifest-v3-green) ![License](https://img.shields.io/badge/license-MIT-yellow)
+
+## What Makes It Different
+
+Unlike basic site blockers (Cold Turkey, StayFocusd), Zero Distract doesn't just block — it **understands**. It analyzes your browsing patterns across the week, identifies when you're most likely to drift, and nudges you at the right moment with the right message.
 
 ## Features
 
-### 📊 Advanced Time Tracking
-- **Automatic hourly bucketing** - Tracks time spent on each site per hour of the day
-- **7-day analytics dashboard** - See your distraction patterns across the entire week
-- **Daily focus score** - Compare today's focus against yesterday with percentage changes
-- **Visual charts** - Interactive 7-day bar chart showing daily focus scores
+### Focus Mode Toggle
+One-click activation from the popup. When enabled:
+- Smart nudges appear after spending time on distraction sites
+- Social media feeds are replaced with your priority list
+- The extension icon turns green to show active status
 
-### 🎯 Intelligent Pattern Detection
-- **Peak distraction windows** - System identifies when you're most likely to get distracted
-- **Recurring drift analysis** - Detects which days of the week you struggle most
-- **Trend analysis** - Tracks if your focus is improving or declining
-- **Smart timing** - Optional feature to nudge you earlier during your peak distraction times
+### Time Tracking
+- Automatic hourly bucketing of time spent per domain
+- Lightweight 5-second interval detection via Chrome alarms
+- 7-day data retention with daily focus score calculation
 
-### 🔔 Customizable Nudge System
-- **Adjustable timing** - Choose when to be nudged (1-10 minutes after visiting a distraction site)
-- **Cooldown periods** - Prevent notification fatigue (5-60 minute intervals)
-- **Smart timing mode** - Automatically adjust nudge timing based on your patterns
-- **Focus mode toggle** - Instantly activate/deactivate focus monitoring
+### Smart Nudges
+- Contextual toast notifications when you drift to distraction sites
+- Adjustable delay (1-10 minutes) and cooldown (5-60 minutes)
+- Smart timing mode — nudges faster during your peak distraction hours
+- Pattern-aware: detects recurring drifts and adjusts automatically
+- Only active during configured work hours
 
-### 🎨 Feed Replacement
-- **YouTube, Reddit, Twitter blocking** - Replace feeds with productivity content
-- **Todo list display** - See your tasks when you visit blocked sites
-- **Inspirational quotes** - Get motivation when tempted
-- **Per-site customization** - Toggle which sites have feed replacement
+### Feed Replacement
+- Replaces homepage feeds on YouTube, Reddit, and Twitter/X
+- Shows current time, a motivational message, and your priority checklist
+- Editable todo list that persists across sessions
+- "Continue anyway" bypass with 30-minute cooldown
+- Per-site toggle (enable/disable individually)
 
-### ⚙️ Flexible Settings
-- **Work hours** - Set when nudges and feed replacement are active
-- **Distraction sites list** - Add or remove sites to monitor
-- **Data export** - Download your time tracking data as JSON
-- **Full reset** - Clear all data and restore defaults
+### Analytics Dashboard
+- 7-day bar chart with color-coded daily focus scores (green/orange/red)
+- Click any day for detailed site-by-site breakdown
+- Weekly insights: peak distraction windows, recurring drift days, trend direction
+- Site breakdown table with total time, daily averages, and categories
+
+### Pattern Detection
+- **Peak distraction window** — identifies the hour you're most distracted
+- **Recurring drift analysis** — detects which days of the week are hardest
+- **Trend analysis** — compares last 3 days vs previous 3 days
+- **Worst day detection** — highlights your most distraction-heavy day
+
+### Interactive Onboarding
+First-time users get a 4-step interactive walkthrough:
+1. **Your focus companion** — how the toolbar icon works
+2. **Control at a glance** — interactive popup demo with live toggle
+3. **Smart nudges** — see the nudge toast with working buttons
+4. **Feed replacement** — try the priority checklist with toggleable checkboxes
+
+### Settings
+- Work hours configuration (start/end time)
+- Distraction sites list management (add/remove)
+- Nudge timing and cooldown controls
+- Feed replacement toggles per site
+- Data export (JSON) and full reset
 
 ## Installation
 
-1. **Clone or download this repository**
+### From Source (Developer Mode)
+
+1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/zero-distract-extension.git
-   cd zero-distract-extension
+   git clone https://github.com/AstrolabzX/zero-distract-extension.git
    ```
 
-2. **Load as unpacked extension in Chrome**
-   - Go to `chrome://extensions/`
-   - Enable "Developer mode" (top right)
-   - Click "Load unpacked"
-   - Select the `zero-distract-extension` folder
+2. Open Chrome and navigate to `chrome://extensions/`
 
-3. **Start using**
-   - Click the Zero Distract icon in your Chrome toolbar
-   - Browse normally - tracking starts automatically
-   - Check your "Open Full Dashboard" to see analytics
+3. Enable **Developer mode** (top right toggle)
+
+4. Click **Load unpacked** and select the project folder
+
+5. Pin the Zero Distract icon in your toolbar
+
+### First Run
+
+On first install, the interactive onboarding page opens automatically. Click through the 4 scenarios to learn how the extension works, then click **Get Started**.
 
 ## How It Works
 
-### Data Flow
 ```
-Content Scripts (Detect site visits)
-        ↓
-Background Service Worker (Track time hourly)
-        ↓
-Chrome Storage (Persist data with hourly buckets)
-        ↓
-UI Pages (Popup, Dashboard, Settings display data)
+Content Script (content.js)          Background Worker (background.js)
+├─ Detects site visits               ├─ 5-second alarm tracks active tab
+├─ Shows nudge toasts (Shadow DOM)   ├─ Hourly time bucketing per domain
+├─ Replaces feeds (Shadow DOM)       ├─ Pattern detection (daily)
+└─ Todo list management              └─ Badge icon updates
+         ↕                                    ↕
+                   Chrome Storage (local)
+                   ├─ timeData (hourly buckets)
+                   ├─ focusMode, distractionSites
+                   ├─ patterns, settings
+                   └─ feedReplacementTodos
+         ↕                                    ↕
+Popup (popup.js)                     Dashboard / Settings
+├─ Focus toggle                      ├─ 7-day analytics
+├─ Top 3 distractions today          ├─ Site breakdown
+├─ Focus score vs yesterday          └─ All configuration
+└─ Quick links to dashboard/settings
 ```
-
-### Time Tracking
-- **5-second interval check** - Lightweight alarm detects active tabs
-- **Hourly bucketing** - Time stored in 24-hour buckets (00-23) per domain
-- **Minimal storage writes** - Only writes to storage when hour changes
-
-### Pattern Detection Algorithm
-1. **Peak distraction window** - Finds the hour with highest total minutes
-2. **Recurring drift** - Identifies which day of week has lowest focus score
-3. **Trend analysis** - Compares average of last 3 days vs previous 3 days
-4. **Worst day** - Determines which day was most distraction-heavy
 
 ### Focus Score Calculation
-- **Daily score**: `100 × (work_time / (work_time + distraction_time))`
-- **Work time**: Minutes on work-related sites (GitHub, documentation, etc.)
-- **Distraction time**: Minutes on marked distraction sites
-- **Comparison**: Shows percentage change vs yesterday
+```
+score = 100 - (distraction_time / total_tracked_time) * 100
+```
+- **100** = no time on distraction sites
+- **0** = all time on distraction sites
+- Compared daily against yesterday's score
 
-## Architecture
+## Project Structure
 
-### Files Overview
+```
+zero-distract-extension/
+├── manifest.json          # Extension configuration (Manifest V3)
+├── background.js          # Service worker: tracking, alarms, patterns
+├── content.js             # Content script: nudges + feed replacement
+├── popup.html/css/js      # Toolbar popup UI
+├── dashboard.html/css/js  # Weekly analytics page
+├── settings.html/css/js   # Configuration page
+├── onboarding.html/css/js # Interactive first-run walkthrough
+└── icons/
+    ├── icon16.png
+    ├── icon48.png
+    └── icon128.png
+```
 
-**Core Extension Files:**
-- `manifest.json` - Permission and configuration declarations
-- `background.js` - Service worker handling time tracking and pattern detection
-- `content.js` - Scripts injected into web pages for nudges and feed replacement
+## Data Structure
 
-**UI Pages:**
-- `popup.html/js/css` - Quick access popup showing daily score and top distractions
-- `dashboard.html/js/css` - Full analytics week view with detailed breakdowns
-- `settings.html/js/css` - User configuration for all features
-
-**Assets:**
-- `icons/` - Extension icons (16×16, 48×48, 128×128 PNG)
-
-### Data Structure
 ```javascript
+// Chrome storage (local only — never sent externally)
 {
+  focusMode: false,                    // Toggle state
+  isFirstRun: false,                   // Onboarding trigger
   timeData: {
-    "2026-02-13": {
-      "youtube.com": { "00": 0, "01": 0, ..., "14": 300, "15": 450 },
-      "github.com": { "14": 60, "15": 120 }
+    "2026-02-14": {
+      "youtube.com": { "09": 120, "10": 300 },  // seconds per hour
+      "github.com": { "10": 60, "11": 240 }
     }
   },
-  distractionSites: ["youtube.com", "reddit.com", ...],
+  distractionSites: ["twitter.com", "x.com", "reddit.com", ...],
   workHours: { startTime: "09:00", endTime: "17:00" },
-  nudgeDelay: 3,
-  nudgeCooldown: 15,
+  nudgeDelay: 3,                       // minutes
+  nudgeCooldown: 15,                   // minutes
   smartTiming: true,
   feedReplacement: { youtube: true, reddit: true, twitter: true },
   feedContent: { showTodos: true, showQuotes: true },
-  patterns: { recurringDrifts, peakDistractionWindow, trend, worstDay },
-  isFirstRun: false
+  feedReplacementTodos: ["", "", ""],   // User's priority list
+  patterns: {
+    recurringDrifts: [...],
+    peakDistractionWindow: "14:00",
+    trend: "improving",
+    worstDay: "Wednesday"
+  }
 }
 ```
 
-## Configuration
-
-### Default Distraction Sites
-```javascript
-[
-  'twitter.com', 'x.com', 'reddit.com', 'youtube.com',
-  'instagram.com', 'facebook.com', 'tiktok.com'
-]
-```
-
-### Default Settings
-- **Nudge delay**: 3 minutes
-- **Nudge cooldown**: 15 minutes
-- **Smart timing**: Enabled
-- **Work hours**: 09:00 - 17:00
-- **Feed replacement**: All enabled
-- **Feed content**: Todos + quotes
-
 ## Permissions
 
-This extension uses minimal permissions:
-- `storage` - To persist time data and settings
-- `alarms` - For 5-second time tracking intervals
-- `tabs` - To detect active tab changes
-- `content scripts` - To inject nudges and replace feeds on distraction sites
+| Permission | Why |
+|-----------|-----|
+| `storage` | Persist time data, settings, and todos locally |
+| `alarms` | 5-second interval for lightweight time tracking |
+| `tabs` | Detect active tab changes and domain switches |
 
-## Browser Support
+Content scripts are injected on all `http/https` pages to enable nudges and feed replacement via Shadow DOM (fully isolated from page styles).
 
-- **Minimum**: Chrome 88+ (Manifest V3 support)
-- **Recommended**: Chrome 120+ (latest stable)
+## Default Configuration
 
-## Development
-
-### Adding a New Distraction Site
-1. Open Settings page
-2. Click "Add Site" 
-3. Enter domain (e.g., `twitch.tv`)
-4. Site will be tracked and nudged immediately
-
-### Customizing Nudge Messages
-Edit the nudge message in `content.js` around line 300:
-```javascript
-const nudgeMessage = "You've been here too long. Time to refocus?";
-```
-
-### Changing Colors/Theme
-Edit CSS files:
-- `popup.css` - Popup styling
-- `dashboard.css` - Dashboard styling
-- `settings.css` - Settings styling
-
-The main color is purple (`#7C3AED`). Change all instances to customize.
+| Setting | Default |
+|---------|---------|
+| Distraction sites | twitter.com, x.com, reddit.com, youtube.com, instagram.com, facebook.com, tiktok.com |
+| Work hours | 09:00 - 17:00 |
+| Nudge delay | 3 minutes |
+| Nudge cooldown | 15 minutes |
+| Smart timing | Enabled |
+| Feed replacement | YouTube, Reddit, Twitter (all enabled) |
 
 ## Troubleshooting
 
-### Data not showing in dashboard?
-1. Visit a distraction site for at least 1 minute
-2. Reload the dashboard (F5)
-3. Open DevTools (F12) → Console to check for errors
+**Nudges not appearing?**
+- Ensure Focus Mode is toggled on (green icon)
+- Check that the site is in your distraction sites list (Settings)
+- Verify you're within configured work hours
+- Wait for the nudge delay to elapse (default: 3 minutes)
 
-### Nudges not appearing?
-- Check Settings for work hours (nudges only active during work hours)
-- Verify nudgeCooldown hasn't recently triggered
-- Ensure site is in distraction sites list
-- Check "Focus Mode" isn't disabled
+**Dashboard shows no data?**
+- Browse normally for a few minutes with the extension loaded
+- Refresh the dashboard page
+- Check the service worker console for errors (chrome://extensions → Service Workers)
 
-### Settings not saving?
-- Clear extension storage: `chrome://extensions/Zero Distract → Clear data`
-- Reload extension
-- Reconfigure settings
+**"Extension context invalidated" errors?**
+- These only occur on tabs that were open when you reloaded the extension
+- Refresh those tabs to resolve — this does not affect normal usage
+
+**Feed replacement not showing?**
+- Only activates on homepage of supported sites (youtube.com, reddit.com, twitter.com/x.com)
+- Must be within work hours with Focus Mode enabled
+- Check Settings to ensure the specific site toggle is on
 
 ## Privacy
 
-**Data stored locally only.** Zero Distract:
-- ✅ Stores all data in Chrome's local storage (never sent to servers)
-- ✅ Never tracks your identity or personal info
-- ✅ Cannot access site content, only site domains visited
-- ✅ Allows full data export and deletion
+All data stays on your device. Zero Distract:
+- Stores everything in Chrome's local storage — nothing is sent to any server
+- Does not track identity, account info, or page content
+- Only records domain names and time spent
+- Provides full data export and deletion in Settings
 
-## Roadmap
+## Browser Support
 
-Future enhancements:
-- [ ] Export data as CSV/PDF reports
-- [ ] Sync settings across devices
-- [ ] Focus mode with website blocking
-- [ ] Custom nudge notifications
-- [ ] Integration with calendar (respect meeting times)
-- [ ] Team/family focus challenges
-
-## Contributing
-
-Found a bug or have a feature request?
-1. Open an issue describing the problem
-2. Include steps to reproduce
-3. Share relevant console logs (F12 → Console)
+- **Minimum**: Chrome 88+ (Manifest V3)
+- **Recommended**: Chrome 120+
 
 ## License
 
-MIT License - Feel free to modify and distribute
-
-## Support
-
-For questions or issues:
-- Check the troubleshooting section above
-- Open an issue on GitHub
-- Review the console logs (F12) for error details
+MIT License — free to use, modify, and distribute.
 
 ---
 
-**Made with focus in mind.** Zero Distract helps you understand your digital habits and make intentional choices about your attention.
+**Built to help you focus.** Zero Distract doesn't block you — it helps you understand your habits and make intentional choices about your attention.
