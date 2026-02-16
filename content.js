@@ -69,8 +69,6 @@
     }
 
     currentDomain = extractDomain(window.location.href);
-    console.log('[Zero Distract] Content script loaded on:', currentDomain);
-    
     loadSettings();
     startTimer();
     
@@ -398,7 +396,6 @@
   }
 
   function dismissNudge() {
-    console.log('[Zero Distract] Dismissing nudge');
     if (nudgeContainer && document.body.contains(nudgeContainer)) {
       document.body.removeChild(nudgeContainer);
       nudgeContainer = null;
@@ -408,7 +405,6 @@
   }
 
   function closeTab() {
-    console.log('[Zero Distract] Closing tab - back to work');
     chrome.runtime.sendMessage({
       action: 'closeCurrentTab'
     });
@@ -494,14 +490,11 @@
       .logo {
         width: 28px;
         height: 28px;
-        background: linear-gradient(135deg, #6EE7B7, #34D399);
-        border-radius: 8px;
+        background: linear-gradient(135deg, #7C3AED, #6D28D9);
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 800;
-        color: #0D0D0F;
-        font-size: 14px;
         margin: 0 auto;
       }
 
@@ -606,7 +599,7 @@
       <div class="feed-replacement">
         <div class="feed-replacement-content">
           <div class="logo-section">
-            <div class="logo">Z</div>
+            <div class="logo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 7H17L7 17H17" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="20" x2="20" y2="4" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg></div>
           </div>
 
           <div class="time-display" id="focusTime">--:--</div>
@@ -710,7 +703,6 @@
 
     setTimeout(() => {
       bypassCooldownActive = false;
-      console.log('[Zero Distract] Bypass cooldown expired');
     }, 30 * 60 * 1000);
   }
 

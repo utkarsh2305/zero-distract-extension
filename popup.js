@@ -66,7 +66,6 @@ document.addEventListener('DOMContentLoaded', async function() {
           const dashboardUrl = chrome.runtime.getURL('dashboard.html');
           chrome.tabs.create({ url: dashboardUrl });
         } catch (error) {
-          console.error('[Zero Distract] Error opening dashboard:', error);
         }
       });
     }
@@ -79,12 +78,10 @@ document.addEventListener('DOMContentLoaded', async function() {
           const settingsUrl = chrome.runtime.getURL('settings.html');
           chrome.tabs.create({ url: settingsUrl });
         } catch (error) {
-          console.error('[Zero Distract] Error opening settings:', error);
         }
       });
     }
   } catch (error) {
-    console.error('[Zero Distract] Error during popup initialization:', error);
     if (focusSubtitle) {
       focusSubtitle.textContent = 'Error loading. Please reload.';
     }
@@ -107,7 +104,6 @@ async function checkFirstRun() {
         resolve(isFirstRun);
       });
     } catch (error) {
-      console.error('[Zero Distract] Error checking first run:', error);
       resolve(false);
     }
   });
@@ -118,7 +114,6 @@ function initializeDistractionSites() {
   try {
     chrome.storage.local.get(['distractionSites'], function(result) {
       if (chrome.runtime.lastError) {
-        console.error('[Zero Distract] Storage error:', chrome.runtime.lastError);
         return;
       }
       if (!result.distractionSites) {
@@ -126,7 +121,6 @@ function initializeDistractionSites() {
       }
     });
   } catch (error) {
-    console.error('[Zero Distract] Error initializing distraction sites:', error);
   }
 }
 
@@ -135,7 +129,6 @@ function loadFocusState() {
   try {
     chrome.storage.local.get(['focusMode'], function(result) {
       if (chrome.runtime.lastError) {
-        console.error('[Zero Distract] Storage error:', chrome.runtime.lastError);
         updateFocusUI(false);
         return;
       }
@@ -143,7 +136,6 @@ function loadFocusState() {
       updateFocusUI(isActive);
     });
   } catch (error) {
-    console.error('[Zero Distract] Error loading focus state:', error);
     updateFocusUI(false);
   }
 }
@@ -153,33 +145,29 @@ function toggleFocusMode() {
   try {
     chrome.storage.local.get(['focusMode'], function(result) {
       if (chrome.runtime.lastError) {
-        console.error('[Zero Distract] Storage error:', chrome.runtime.lastError);
         return;
       }
       const currentState = result.focusMode || false;
       const newState = !currentState;
-      
+
       // Save new state with error handling
       chrome.storage.local.set({ focusMode: newState }, function() {
         if (chrome.runtime.lastError) {
-          console.error('[Zero Distract] Storage error:', chrome.runtime.lastError);
           return;
         }
         updateFocusUI(newState);
-        
+
         // Notify background script of state change
         try {
-          chrome.runtime.sendMessage({ 
-            action: 'focusModeChanged', 
-            enabled: newState 
+          chrome.runtime.sendMessage({
+            action: 'focusModeChanged',
+            enabled: newState
           });
         } catch (e) {
-          console.error('[Zero Distract] Message error:', e);
         }
       });
     });
   } catch (error) {
-    console.error('[Zero Distract] Error toggling focus mode:', error);
   }
 }
 
@@ -246,7 +234,6 @@ function loadTimeData() {
     
     chrome.storage.local.get(['timeData', 'distractionSites'], function(result) {
       if (chrome.runtime.lastError) {
-        console.error('[Zero Distract] Storage error:', chrome.runtime.lastError);
         updateDistractionList([], 1);
         return;
       }
@@ -289,7 +276,6 @@ function loadTimeData() {
       calculateFocusScore(sites, yesterdayData, distractionSites);
     });
   } catch (error) {
-    console.error('[Zero Distract] Error loading time data:', error);
     updateDistractionList([], 1);
   }
 }

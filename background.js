@@ -30,7 +30,6 @@ function extractDomain(url) {
     
     return hostname;
   } catch (e) {
-    console.error('Error parsing URL:', url, e);
     return null;
   }
 }
@@ -61,7 +60,6 @@ function addTimeToDay(domain, seconds) {
     chrome.storage.local.get(['timeData'], function(result) {
       try {
         if (chrome.runtime.lastError) {
-          console.error('[Zero Distract] Storage read error:', chrome.runtime.lastError);
           return;
         }
         
@@ -88,21 +86,17 @@ function addTimeToDay(domain, seconds) {
         // Save back to storage
         chrome.storage.local.set({ timeData }, function() {
           if (chrome.runtime.lastError) {
-            console.error('[Zero Distract] Storage write error:', chrome.runtime.lastError);
           }
         });
       } catch (e) {
-        console.error('[Zero Distract] Error in addTimeToDay callback:', e);
       }
     });
   } catch (e) {
-    console.error('[Zero Distract] Error in addTimeToDay:', e);
   }
 }
 
 // Update the current active domain
 function updateCurrentDomain(domain) {
-  console.log('Switching tracking to:', domain);
   currentDomain = domain;
 }
 
@@ -115,7 +109,6 @@ async function trackCurrentTab() {
       updateCurrentDomain(domain);
     }
   } catch (e) {
-    console.error('Error querying active tab:', e);
   }
 }
 
@@ -129,7 +122,6 @@ function setupTrackingAlarm() {
     chrome.alarms.create('timeTracker', {
       periodInMinutes: 5 / 60 // 5 seconds = 0.0833... minutes
     });
-    console.log('Time tracking alarm created');
   });
 }
 
@@ -147,7 +139,6 @@ function setupPatternDetectionAlarm() {
       delayInMinutes: minutesUntilMidnight,
       periodInMinutes: 24 * 60 // Run daily
     });
-    console.log('[Zero Distract] Pattern detection alarm created for 11:59 PM daily');
   });
 }
 
@@ -171,7 +162,6 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
       updateCurrentDomain(domain);
     }
   } catch (e) {
-    console.error('Error in onActivated:', e);
   }
 });
 
@@ -188,7 +178,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.windows.onFocusChanged.addListener(async (windowId) => {
   if (windowId === chrome.windows.WINDOW_ID_NONE) {
     // Browser lost focus - stop tracking
-    console.log('Browser lost focus');
     currentDomain = null;
   } else {
     // Browser gained focus - track current tab
@@ -217,8 +206,6 @@ function getDayOfWeekName(dateStr) {
 
 // Detect patterns in user behavior
 function detectPatterns() {
-  console.log('[Zero Distract] Starting pattern detection...');
-  
   chrome.storage.local.get(['timeData', 'distractionSites'], function(result) {
     const timeData = result.timeData || {};
     const distractionSites = result.distractionSites || [];
@@ -398,9 +385,7 @@ function detectPatterns() {
       lastUpdated: Date.now()
     };
     
-    chrome.storage.local.set({ patterns }, function() {
-      console.log('[Zero Distract] Patterns detected and saved:', patterns);
-    });
+    chrome.storage.local.set({ patterns });
   });
 }
 
@@ -408,11 +393,8 @@ function detectPatterns() {
 
 // Listen for extension installation
 chrome.runtime.onInstalled.addListener((details) => {
-  console.log('Zero Distract extension installed', details);
-  
   if (details.reason === 'install') {
     // First time installation - initialize default settings
-    console.log('First time installation');
     chrome.storage.local.set({
       focusMode: false,
       timeData: {},
@@ -430,7 +412,6 @@ chrome.runtime.onInstalled.addListener((details) => {
     chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
   } else if (details.reason === 'update') {
     // Extension updated
-    console.log('Extension updated');
   }
   
   // Start tracking
@@ -448,10 +429,7 @@ trackCurrentTab();
 
 // Handle messages from popup or content scripts
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log('Message received:', request);
-  
   if (request.action === 'focusModeChanged') {
-    console.log('Focus mode changed to:', request.enabled);
     // Update extension UI to show focus mode status
     if (request.enabled) {
       // Show badge for focus mode
@@ -510,9 +488,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'closeCurrentTab') {
     // Close the tab that sent the message
     if (sender.tab && sender.tab.id) {
-      chrome.tabs.remove(sender.tab.id, function() {
-        console.log('Closed tab:', sender.tab.id);
-      });
+      chrome.tabs.remove(sender.tab.id);
     }
     return false;
   }

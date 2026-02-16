@@ -80,7 +80,6 @@ function loadDashboard() {
     chrome.storage.local.get(['timeData', 'distractionSites', 'patterns'], (result) => {
       try {
         if (chrome.runtime.lastError) {
-          console.error('[Zero Distract] Storage error:', chrome.runtime.lastError);
           return;
         }
         
@@ -88,14 +87,11 @@ function loadDashboard() {
         const distractionSites = result.distractionSites || DEFAULT_DISTRACTION_SITES;
         const patterns = result.patterns || {};
         
-        console.log('[Zero Distract Dashboard] Loaded data:', { timeData, hasData: Object.keys(timeData).length });
-        
         // Get last 7 days
         const last7Days = getLast7Days();
         const dayScores = last7Days.map(({ date, dateStr }) => {
           const dayData = timeData[dateStr] || {};
           const score = calculateDayScore(dayData, distractionSites);
-          console.log(`[Zero Distract] Day ${dateStr}: score=${score}, sites=${Object.keys(dayData).length}`);
           return {
             date,
             dateStr,
@@ -105,11 +101,8 @@ function loadDashboard() {
           };
         });
         
-        console.log('[Zero Distract] Day scores:', dayScores);
-        
         // Update header
         const avgScore = Math.round(dayScores.reduce((sum, d) => sum + d.score, 0) / 7);
-        console.log('[Zero Distract] Average score:', avgScore);
         updateHeader(dayScores, avgScore);
         
         // Render bar chart
@@ -140,19 +133,15 @@ function loadDashboard() {
           });
         });
         
-        console.log('[Zero Distract] All sites:', allSites);
-        
         // Render insights
         renderInsights(dayScores, allSites, distractionSites, patterns);
         
         // Render breakdown table
         renderBreakdown(allSites, distractionSites);
       } catch (error) {
-        console.error('[Zero Distract] Error in loadDashboard callback:', error, error.stack);
       }
     });
   } catch (error) {
-    console.error('[Zero Distract] Error in loadDashboard:', error, error.stack);
   }
 }
 
@@ -177,7 +166,6 @@ function updateHeader(dayScores, avgScore) {
       scoreBadgeEl.textContent = `${avgScore}/100`;
     }
   } catch (error) {
-    console.error('[Zero Distract] Error updating header:', error);
   }
 }
 
@@ -224,7 +212,6 @@ function renderBarChart(dayScores) {
       barChart.appendChild(container);
     });
   } catch (error) {
-    console.error('[Zero Distract] Error rendering bar chart:', error);
   }
 }
 
@@ -389,7 +376,6 @@ function renderInsights(dayScores, allSites, distractionSites, patterns) {
     insightsGrid.appendChild(card);
   });
   } catch (error) {
-    console.error('[Zero Distract] Error rendering insights:', error);
   }
 }
 
@@ -425,7 +411,6 @@ function renderBreakdown(allSites, distractionSites) {
     });
   }
   } catch (error) {
-    console.error('[Zero Distract] Error rendering breakdown:', error);
   }
 }
 

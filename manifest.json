@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Zero Distract",
   "version": "1.0.0",
-  "description": "Reclaim your focus with intelligent nudges. Zero Distract blocks social media feeds and sends smart reminders when you spend too much time on distracting sites. Track your patterns, set work hours, and build better digital habits.",
+  "description": "Block social media feeds, get smart nudges, and track distraction patterns. Reclaim your focus with Zero Distract.",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

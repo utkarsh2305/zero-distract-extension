@@ -84,9 +84,7 @@ async function loadSettings() {
     const showQuoteEl = document.getElementById('showQuote');
     if (showQuoteEl) showQuoteEl.checked = feedContent.showQuotes !== false;
 
-    console.log('[Zero Distract Settings] Settings loaded successfully');
   } catch (error) {
-    console.error('[Zero Distract Settings] Error loading settings:', error);
   }
 }
 
@@ -117,9 +115,7 @@ function renderSitesList(sites) {
 async function saveSettings(updates) {
   try {
     await chrome.storage.local.set(updates);
-    console.log('[Zero Distract Settings] Saved:', Object.keys(updates));
   } catch (error) {
-    console.error('[Zero Distract Settings] Error saving settings:', error);
   }
 }
 
@@ -240,7 +236,6 @@ async function addSite() {
   renderSitesList(sites);
   input.value = '';
   showNotification(`Added ${domain} to distraction sites`, 'success');
-  console.log('[Zero Distract Settings] Added site:', domain);
 }
 
 async function removeSite(site) {
@@ -250,7 +245,6 @@ async function removeSite(site) {
   sites = sites.filter(s => s !== site);
   await saveSettings({ distractionSites: sites });
   renderSitesList(sites);
-  console.log('[Zero Distract Settings] Removed site:', site);
 }
 
 /* ========== WORK HOURS ========== */
@@ -281,7 +275,6 @@ async function saveWorkHours() {
   await saveSettings({
     workHours: { startTime, endTime }
   });
-  console.log('[Zero Distract Settings] Work hours updated:', { startTime, endTime });
 }
 
 /* ========== NUDGE SETTINGS ========== */
@@ -291,7 +284,6 @@ async function saveNudgeSettings() {
   const nudgeCooldownEl = document.getElementById('nudgeCooldown');
   
   if (!nudgeDelayEl || !nudgeCooldownEl) {
-    console.error('[Zero Distract Settings] Nudge elements not found');
     return;
   }
   
@@ -302,13 +294,11 @@ async function saveNudgeSettings() {
     nudgeDelay: delay,
     nudgeCooldown: cooldown
   });
-  console.log('[Zero Distract Settings] Nudge settings updated:', { delay, cooldown });
 }
 
 async function saveSmartTiming() {
   const enabled = document.getElementById('smartTimingToggle').checked;
   await saveSettings({ smartTiming: enabled });
-  console.log('[Zero Distract Settings] Smart timing:', enabled ? 'enabled' : 'disabled');
 }
 
 /* ========== FEED REPLACEMENT ========== */
@@ -319,7 +309,6 @@ async function saveFeedReplacement() {
   const twitterEl = document.getElementById('feedTwitter');
   
   if (!youtubeEl || !redditEl || !twitterEl) {
-    console.error('[Zero Distract Settings] Feed elements not found');
     return;
   }
   
@@ -330,7 +319,6 @@ async function saveFeedReplacement() {
   await saveSettings({
     feedReplacement: { youtube, reddit, twitter }
   });
-  console.log('[Zero Distract Settings] Feed replacement updated:', { youtube, reddit, twitter });
 }
 
 async function saveFeedContent() {
@@ -338,7 +326,6 @@ async function saveFeedContent() {
   const showQuoteEl = document.getElementById('showQuote');
   
   if (!showTodoListEl || !showQuoteEl) {
-    console.error('[Zero Distract Settings] Feed content elements not found');
     return;
   }
   
@@ -348,7 +335,6 @@ async function saveFeedContent() {
   await saveSettings({
     feedContent: { showTodos, showQuotes }
   });
-  console.log('[Zero Distract Settings] Feed content updated:', { showTodos, showQuotes });
 }
 
 /* ========== DATA MANAGEMENT ========== */
@@ -370,10 +356,8 @@ async function exportData() {
     link.click();
     URL.revokeObjectURL(url);
 
-    console.log('[Zero Distract Settings] Data exported successfully');
     showNotification('Data exported successfully', 'success');
   } catch (error) {
-    console.error('[Zero Distract Settings] Error exporting data:', error);
     showNotification('Error exporting data', 'error');
   }
 }
@@ -409,9 +393,7 @@ async function clearData() {
 
     closeModal();
     showNotification('All data cleared successfully', 'success');
-    console.log('[Zero Distract Settings] Data cleared');
   } catch (error) {
-    console.error('[Zero Distract Settings] Error clearing data:', error);
     showNotification('Error clearing data', 'error');
   }
 }
@@ -423,9 +405,7 @@ async function resetDefaults() {
     loadSettings();
     closeModal();
     showNotification('Settings reset to defaults', 'success');
-    console.log('[Zero Distract Settings] Settings reset to defaults');
   } catch (error) {
-    console.error('[Zero Distract Settings] Error resetting settings:', error);
     showNotification('Error resetting settings', 'error');
   }
 }
@@ -478,7 +458,6 @@ function escapeHtml(text) {
 function showNotification(message, type = 'info') {
   // For now, just log. In future, could add toast notifications
   const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
-  console.log(`[Zero Distract Settings] ${icon} ${message}`);
 }
 
-console.log('[Zero Distract Settings] Page loaded and ready');
+
