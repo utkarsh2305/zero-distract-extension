@@ -4,8 +4,6 @@
 (function() {
   'use strict';
 
-  console.log('[Zero Distract] IIFE started on domain:', window.location.hostname);
-
   // ===== NUDGE SYSTEM STATE =====
   let nudgeContainer = null;
   let shadowRoot = null;
