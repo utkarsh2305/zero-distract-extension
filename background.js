@@ -4,6 +4,52 @@
 let currentDomain = null;
 let trackingActive = false;
 
+// Default distraction sites (these have static content_scripts in manifest.json)
+const DEFAULT_DISTRACTION_SITES = [
+  'twitter.com', 'x.com', 'reddit.com', 'youtube.com',
+  'instagram.com', 'facebook.com', 'tiktok.com'
+];
+
+// ===== DYNAMIC CONTENT SCRIPT REGISTRATION =====
+
+// Register content scripts for custom (non-default) distraction sites
+async function registerCustomContentScripts(allSites) {
+  const customSites = allSites.filter(site => !DEFAULT_DISTRACTION_SITES.includes(site));
+
+  // Unregister previous dynamic scripts
+  try {
+    await chrome.scripting.unregisterContentScripts({ ids: ['custom-distraction-sites'] });
+  } catch (e) {
+    // No scripts to unregister
+  }
+
+  if (customSites.length === 0) return;
+
+  const patterns = customSites.flatMap(site => [
+    `https://${site}/*`,
+    `https://www.${site}/*`
+  ]);
+
+  try {
+    await chrome.scripting.registerContentScripts([{
+      id: 'custom-distraction-sites',
+      matches: patterns,
+      js: ['content.js'],
+      runAt: 'document_idle'
+    }]);
+  } catch (e) {
+    // Permission may not be granted yet for these hosts
+  }
+}
+
+// Re-register custom scripts when distraction sites change
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  if (namespace === 'local' && changes.distractionSites) {
+    const newSites = changes.distractionSites.newValue || [];
+    registerCustomContentScripts(newSites);
+  }
+});
+
 // ===== HELPER FUNCTIONS =====
 
 // Extract domain from URL
@@ -424,6 +470,12 @@ chrome.runtime.onInstalled.addListener((details) => {
 setupTrackingAlarm();
 setupPatternDetectionAlarm();
 trackCurrentTab();
+
+// Register content scripts for any custom distraction sites
+chrome.storage.local.get(['distractionSites'], function(result) {
+  const sites = result.distractionSites || DEFAULT_DISTRACTION_SITES;
+  registerCustomContentScripts(sites);
+});
 
 // ===== MESSAGE HANDLERS =====
 

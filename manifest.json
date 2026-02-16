@@ -16,7 +16,20 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://*/*", "http://*/*"],
+      "matches": [
+        "https://twitter.com/*",
+        "https://x.com/*",
+        "https://www.reddit.com/*",
+        "https://reddit.com/*",
+        "https://www.youtube.com/*",
+        "https://youtube.com/*",
+        "https://www.instagram.com/*",
+        "https://instagram.com/*",
+        "https://www.facebook.com/*",
+        "https://facebook.com/*",
+        "https://www.tiktok.com/*",
+        "https://tiktok.com/*"
+      ],
       "js": ["content.js"],
       "run_at": "document_idle"
     }
@@ -24,7 +37,12 @@
   "permissions": [
     "storage",
     "alarms",
-    "tabs"
+    "tabs",
+    "scripting"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
   ],
   "icons": {
     "16": "icons/icon16.png",
@@ -34,7 +52,20 @@
   "web_accessible_resources": [
     {
       "resources": ["dashboard.html", "settings.html", "onboarding.html"],
-      "matches": ["<all_urls>"]
+      "matches": [
+        "https://twitter.com/*",
+        "https://x.com/*",
+        "https://www.reddit.com/*",
+        "https://reddit.com/*",
+        "https://www.youtube.com/*",
+        "https://youtube.com/*",
+        "https://www.instagram.com/*",
+        "https://instagram.com/*",
+        "https://www.facebook.com/*",
+        "https://facebook.com/*",
+        "https://www.tiktok.com/*",
+        "https://tiktok.com/*"
+      ]
     }
   ]
 }

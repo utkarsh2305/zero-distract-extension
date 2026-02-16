@@ -230,6 +230,21 @@ async function addSite() {
     return;
   }
 
+  // For custom sites (not in defaults), request host permission for content script injection
+  const isDefault = DEFAULT_SETTINGS.distractionSites.includes(domain);
+  if (!isDefault) {
+    try {
+      const granted = await chrome.permissions.request({
+        origins: [`https://${domain}/*`, `https://www.${domain}/*`]
+      });
+      if (!granted) {
+        showNotification(`Added ${domain} — time tracking works, but nudges require site permission`, 'info');
+      }
+    } catch (e) {
+      // Permission request failed — site still gets added for time tracking
+    }
+  }
+
   // Add new site
   sites.push(domain);
   await saveSettings({ distractionSites: sites });
